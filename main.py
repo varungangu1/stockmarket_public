@@ -186,7 +186,7 @@ embeddings = OpenAIEmbeddings(openai_api_key=os.getenv("openai_api_key"))
 vs = FAISS.load_local(folder_path="vectorstore", embeddings=embeddings)
 
 # Query to start with
-query = "is it good time to invest in Antarctica Ltd"
+query = "is it good time to invest in Vodafone Idea Ltd"
 
 with get_openai_callback() as cb:
     result = get_answer(
@@ -200,4 +200,5 @@ with get_openai_callback() as cb:
         query,
     )
     print(cb)
+
 print(result)
