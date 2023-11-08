@@ -9,6 +9,7 @@ from main_2 import (
     get_balancesheet_summary,
     get_technical_indicators,
     get_tech_summary,
+    generate_stock_recommendation,
 )
 
 # Initialize an in-memory cache for the language model
@@ -91,3 +92,11 @@ if "openaikey" in st.session_state:
                 )
             with st.expander(label="Technical summary:"):
                 st.markdown(f"{technical_result.content}")
+
+            with st.spinner("Processing final recommendation....."):
+                recommendation_result = generate_stock_recommendation(
+                    financial_summary=balancesheet_result,
+                    technical_summary=technical_result,
+                    model=st.session_state["llm"],
+                )
+            st.markdown(recommendation_result.content)

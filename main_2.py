@@ -76,7 +76,7 @@ def get_balance_sheet(ticker: str) -> str:
 # Function to generate a summary of a company's balance sheet using a language model
 def get_balancesheet_summary(llm, balance_sheet_json):
     # Define a system template for the conversation
-    system_template = """You are a helpful assistant who is an expert in the stock market. Your task is to summarize the company's balance sheet delimited by triple quotes.
+    system_template = """You are a helpful assistant who is an expert in Indian stock market. Your task is to summarize the company's balance sheet delimited by triple quotes.
     Provide your response in a bullet-point format, encompassing both favorable and unfavorable aspects."""
 
     # Define a user template with the balance sheet data to be summarized
@@ -145,7 +145,7 @@ def get_tech_summary(llm, technical_indicator_json):
     summary = get_tech_summary(llm, technical_indicator_data)
     """
     # Define a system template for the conversation
-    system_template = """You are a helpful assistant who is an expert in the stock market. Your task is to summarize the company's technical indicator values delimited by triple quotes.
+    system_template = """You are a helpful assistant who is an expert in Indian stock market. Your task is to summarize the company's technical indicator values delimited by triple quotes.
     Provide your response in a bullet-point format, encompassing both favorable and unfavorable aspects."""
 
     # Define a user template with the technical indicator data to be summarized
@@ -166,6 +166,44 @@ def get_tech_summary(llm, technical_indicator_json):
     return result
 
 
+def generate_stock_recommendation(model, financial_summary, technical_summary):
+    """
+    Generate a stock recommendation by combining financial and technical summaries.
+
+    Args:
+    - model: OpenAI language model instance for generating text.
+    - financial_summary: The financial summary of the stock.
+    - technical_summary: The technical summary of the stock.
+
+    Returns:
+    A text-based recommendation about the stock based on the input summaries.
+    """
+
+    # Define the system and user messages for the conversation
+    system_message = """You are an expert assistant specializing in the Indian stock market. 
+Combine the financial and technical summaries to provide a concise stock recommendation in a single sentence."""
+
+    user_message = f"""Financial Summary:\n{financial_summary}\n\nTechnical Summary:\n{technical_summary}"""
+
+    # Create a chat prompt template using the defined messages
+    prompt = ChatPromptTemplate.from_messages(
+        [("system", system_message), ("human", user_message)]
+    )
+
+    # Combine the templates with the language model
+    chain = prompt | model
+
+    # Invoke the model to generate the recommendation based on the input summaries
+    result = chain.invoke(
+        input={
+            "financial_summary": financial_summary.content,
+            "technical_summary": technical_summary.content,
+        }
+    )
+
+    return result
+
+
 # # Load environment variables from a .env file
 # dotenv.load_dotenv()
 
@@ -182,7 +220,7 @@ def get_tech_summary(llm, technical_indicator_json):
 # company_names = list(stock_db["Symbol"].keys())
 
 # # Get the stock ticker for the first company
-# ticker = stock_db["Symbol"][company_names[0]]
+# ticker = stock_db["Symbol"][company_names[10]]
 
 # # Call the get_balance_sheet function to retrieve the balance sheet data for the specified company
 # balance_sheet_json = get_balance_sheet(ticker)
@@ -200,3 +238,11 @@ def get_tech_summary(llm, technical_indicator_json):
 # technical_result = get_tech_summary(llm, technical_indicator_json)
 
 # print(technical_result.content)
+
+# recommendation_result = generate_stock_recommendation(
+#     financial_summary=balancesheet_result.content,
+#     technical_summary=technical_result.content,
+#     model=llm,
+# )
+
+# print(recommendation_result.content)
